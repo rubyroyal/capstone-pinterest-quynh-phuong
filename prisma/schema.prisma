@@ -6,6 +6,51 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id       Int         @id @default(autoincrement())
+  email         String      @unique
+  pass_word     String
+  full_name     String
+  age           Int
+  avatar        String?
+  comments      Comment[]
+  createdImages Image[]     @relation("ImageCreator", references: [user_id])
+  savedImages   Image[]     @relation("SaveImage", references: [user_id])
+  SaveImage     SaveImage[]
+}
+
+model Image {
+  image_id    Int         @id @default(autoincrement())
+  image_name  String
+  url         String
+  description String?
+  user_id     Int
+  comments    Comment[]
+  creator     User        @relation("ImageCreator", fields: [user_id], references: [user_id])
+  savedBy     User[]      @relation("SaveImage", references: [user_id])
+  SaveImage   SaveImage[]
+}
+
+model Comment {
+  comment_id   Int      @id @default(autoincrement())
+  user_id      Int
+  image_id     Int
+  comment_date DateTime
+  content      String
+  user         User     @relation(fields: [user_id], references: [user_id])
+  image        Image    @relation(fields: [image_id], references: [image_id])
+}
+
+model SaveImage {
+  user_id   Int
+  image_id  Int
+  save_date DateTime
+  user      User     @relation("SaveImage", fields: [user_id], references: [user_id])
+  image     Image    @relation("ImageSavedBy", fields: [image_id], references: [image_id])
+
+  @@id([user_id, image_id])
 }
