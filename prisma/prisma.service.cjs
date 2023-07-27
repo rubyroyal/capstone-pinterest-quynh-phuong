@@ -1,5 +1,5 @@
-// prisma/prisma.service.js
-import { PrismaClient } from '@prisma/client';
+// prisma/prisma.service.cjs
+const { PrismaClient } = require('@prisma/client');
 
 class PrismaService {
   // client: PrismaClient;
@@ -12,4 +12,4 @@ class PrismaService {
   }
 }
 
-export default PrismaService;
+module.exports = PrismaService;

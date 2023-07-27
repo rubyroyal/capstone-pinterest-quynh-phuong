@@ -16,4 +16,7 @@ export class SignupDto {
 
   @IsNotEmpty()
   age: number;
+
+  @IsString()
+  avatar: string; // Thêm trường avatar vào SignupDto
 }

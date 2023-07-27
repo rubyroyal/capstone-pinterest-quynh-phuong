@@ -1,46 +1,44 @@
 // image.controller.ts
-import { Controller, Get, Param, Query, Post, Body } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ImageService } from './image.service';
+import { tblComment } from '@prisma/client';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('images')
+@ApiTags('Image')
+@Controller('image')
 export class ImageController {
   constructor(private readonly imageService: ImageService) {}
 
   @Get()
-  getAllImages() {
+  async getAllImages() {
     return this.imageService.getAllImages();
   }
 
   @Get('search')
-  searchImages(@Query('name') name: string) {
+  async searchImagesByName(@Query('name') name: string) {
     return this.imageService.searchImagesByName(name);
   }
 
-  @Get(':imageId')
-  getImageAndCreator(@Param('imageId') imageId: number) {
-    return this.imageService.getImageAndCreator(imageId);
+  @Get(':id')
+  async getImageAndCreator(@Param('id') id: number) {
+    return this.imageService.getImageAndCreator(id);
   }
 
-  @Get(':imageId/comments')
-  getImageComments(@Param('imageId') imageId: number) {
-    return this.imageService.getImageComments(imageId);
+  @Get(':id/comments')
+  async getImageComments(@Param('id') id: number): Promise<tblComment[]> {
+    return this.imageService.getImageComments(id);
   }
 
-  @Get(':imageId/saved')
-  checkImageSaved(@Param('imageId') imageId: number) {
-    return this.imageService.checkImageSaved(imageId);
+  @Get(':id/saved')
+  async checkImageSaved(@Param('id') id: number): Promise<boolean> {
+    return this.imageService.checkImageSaved(id);
   }
 
-  @Post(':imageId/comments')
-  saveImageComment(
-    @Param('imageId') imageId: number,
-    @Body() body: { content: string },
-  ) {
-    return this.imageService.saveImageComment(imageId, body.content);
+  @Post(':id/comments')
+  async saveImageComment(
+    @Param('id') id: number,
+    @Body('content') content: string,
+  ): Promise<tblComment> {
+    return this.imageService.saveImageComment(id, content);
   }
 }
-
-// import { Controller } from '@nestjs/common';
-
-// @Controller('image')
-// export class ImageController {}

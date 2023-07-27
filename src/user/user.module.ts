@@ -1,11 +1,10 @@
-// user.module.ts
-import { Module } from '@nestjs/common';
-import { UserService } from './user.service';
-import { UserController } from './user.controller';
-import { PrismaService } from '../../prisma/prisma.service'; // Kiểm tra đường dẫn
+import { Module, forwardRef } from '@nestjs/common';
+import { AuthService } from '../auth/auth.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  providers: [UserService, PrismaService], // Đảm bảo PrismaService đã được thêm vào providers
-  controllers: [UserController],
+  imports: [forwardRef(() => AuthModule)],
+  providers: [AuthService],
+  exports: [AuthService],
 })
 export class UserModule {}

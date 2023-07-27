@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
-import { User } from '../user/user.entity';
+import { tblUser as User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -15,16 +15,17 @@ export class AuthService {
   ) {}
 
   async signup(signupDto: SignupDto): Promise<User> {
-    const { email, password, fullName, age } = signupDto;
+    const { email, password, fullName, age, avatar } = signupDto;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    return this.userService.createUser({
+    return this.userService.createUser(
       email,
-      password: hashedPassword,
+      hashedPassword,
       fullName,
       age,
-    });
+      avatar,
+    );
   }
 
   async login(loginDto: LoginDto): Promise<{ accessToken: string }> {
@@ -32,11 +33,11 @@ export class AuthService {
 
     const user = await this.userService.getUserByEmail(email);
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user || !(await bcrypt.compare(password, user.pass_word))) {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    const accessToken = this.generateAccessToken(user.id);
+    const accessToken = this.generateAccessToken(user.user_id);
     return { accessToken };
   }
 
