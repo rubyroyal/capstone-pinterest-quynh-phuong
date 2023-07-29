@@ -1,12 +1,11 @@
-import { Module, forwardRef } from '@nestjs/common';
-import { SaveImageService } from './save-image.service';
+// save-image/save-image.module.ts
+import { Module } from '@nestjs/common';
 import { SaveImageController } from './save-image.controller';
-import { PrismaService } from '../../prisma/prisma.service.cjs';
-import { ImageModule } from 'src/image/image.module';
+import { SaveImageService } from './save-image.service';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Module({
-  imports: [forwardRef(() => ImageModule)],
   controllers: [SaveImageController],
-  providers: [SaveImageService, PrismaService],
+  providers: [SaveImageService, PrismaService], // Thêm SaveImageService và PrismaService vào providers
 })
 export class SaveImageModule {}

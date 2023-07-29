@@ -1,23 +1,14 @@
-// auth.controller.ts
-import { Body, Controller, Post } from '@nestjs/common';
+import { Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignupDto } from './dto/signup.dto';
-import { LoginDto } from './dto/login.dto';
-import { ApiTags } from '@nestjs/swagger';
-import { tblUser as User } from '@prisma/client'; // Thay User bằng tblUser
+import { LocalAuthGuard } from './local-auth.guard';
 
-@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('signup')
-  async signup(@Body() signupDto: SignupDto): Promise<User> {
-    return this.authService.signup(signupDto);
-  }
-
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Body() loginDto: LoginDto): Promise<{ accessToken: string }> {
-    return this.authService.login(loginDto);
+  async login(@Request() req) {
+    return this.authService.login(req.user);
   }
 }

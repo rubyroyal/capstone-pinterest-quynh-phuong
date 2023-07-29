@@ -32,11 +32,12 @@ CREATE TABLE `tblImage` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `tblSaveImage` (
-  `user_id` int DEFAULT NULL,
-  `image_id` int DEFAULT NULL,
+  `user_id` int NOT NULL,
+  `image_id` int NOT NULL,
   `save_date` date DEFAULT NULL,
-  KEY `user_id` (`user_id`),
+  PRIMARY KEY (`user_id`,`image_id`),
   KEY `image_id` (`image_id`),
+  KEY `user_id` (`user_id`) USING BTREE,
   CONSTRAINT `tblSaveImage_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `tblUser` (`user_id`),
   CONSTRAINT `tblSaveImage_ibfk_2` FOREIGN KEY (`image_id`) REFERENCES `tblImage` (`image_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

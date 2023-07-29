@@ -1,38 +1,35 @@
-// saveImage.controller.ts
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+// save-image.controller.ts
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { SaveImageService } from './save-image.service';
-import { tblComment } from '@prisma/client';
-import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { tblImage, tblSaveImage } from '@prisma/client';
 
-@ApiTags('SaveImage')
-@Controller('saveImage')
+@ApiTags('save-image')
+@Controller('save-image')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 export class SaveImageController {
-  constructor(private readonly saveImageService: SaveImageService) {}
+  constructor(private saveImageService: SaveImageService) {}
 
-  @Get(':id')
-  async checkImageSaved(@Param('id') id: number): Promise<boolean> {
-    return this.saveImageService.checkImageSaved(id);
+  @Get('saved/:userId')
+  @ApiOkResponse({ description: 'Retrieve saved images by user ID.' })
+  async getSavedImagesByUserId(
+    @Param('userId') userId: number,
+  ): Promise<tblImage[]> {
+    return this.saveImageService.getSavedImagesByUserId(userId);
   }
 
-  @Post(':id')
-  async saveImage(
-    @Param('id') id: number,
-    @Body('userId') userId: number,
-  ): Promise<void> {
-    return this.saveImageService.saveImage(id, userId);
-  }
-
-  @Get(':id/comments')
-  async getImageComments(@Param('id') id: number): Promise<tblComment[]> {
-    return this.saveImageService.getImageComments(id);
-  }
-
-  @Post(':id/comments')
-  async saveImageComment(
-    @Param('id') id: number,
-    @Body('content') content: string,
-    @Body('userId') userId: number,
-  ): Promise<tblComment> {
-    return this.saveImageService.saveImageComment(id, content, userId);
+  @Get('created/:userId')
+  @ApiOkResponse({ description: 'Retrieve created images by user ID.' })
+  async getCreatedImagesByUserId(
+    @Param('userId') userId: number,
+  ): Promise<tblImage[]> {
+    return this.saveImageService.getCreatedImagesByUserId(userId);
   }
 }

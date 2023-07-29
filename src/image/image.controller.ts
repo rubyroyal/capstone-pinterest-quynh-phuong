@@ -1,44 +1,66 @@
-// image.controller.ts
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { ImageService } from './image.service';
-import { tblComment } from '@prisma/client';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+  ApiCreatedResponse,
+} from '@nestjs/swagger';
+import { Prisma, tblImage, PrismaClient } from '@prisma/client'; // Import Prisma
 
-@ApiTags('Image')
+import { ImageService } from './image.service';
+
+@ApiTags('image')
 @Controller('image')
 export class ImageController {
-  constructor(private readonly imageService: ImageService) {}
+  constructor(private imageService: ImageService) {}
 
   @Get()
-  async getAllImages() {
+  @ApiOkResponse({ description: 'Retrieve all images.' })
+  async getAllImages(): Promise<tblImage[]> {
     return this.imageService.getAllImages();
   }
 
   @Get('search')
-  async searchImagesByName(@Query('name') name: string) {
-    return this.imageService.searchImagesByName(name);
+  @ApiOkResponse({ description: 'Search images by name.' })
+  async searchImagesByName(
+    @Query('name') imageName: string,
+  ): Promise<tblImage[]> {
+    return this.imageService.searchImagesByName(imageName);
   }
 
   @Get(':id')
-  async getImageAndCreator(@Param('id') id: number) {
-    return this.imageService.getImageAndCreator(id);
-  }
-
-  @Get(':id/comments')
-  async getImageComments(@Param('id') id: number): Promise<tblComment[]> {
-    return this.imageService.getImageComments(id);
+  @ApiOkResponse({ description: 'Retrieve an image by ID.' })
+  @ApiNotFoundResponse({ description: 'Image not found.' })
+  async getImageById(@Param('id') imageId: number): Promise<tblImage | null> {
+    return this.imageService.getImageById(imageId);
   }
 
   @Get(':id/saved')
-  async checkImageSaved(@Param('id') id: number): Promise<boolean> {
-    return this.imageService.checkImageSaved(id);
+  @ApiOkResponse({ description: 'Check if an image is saved.', type: Boolean })
+  async checkImageSaved(@Param('id') imageId: number): Promise<boolean> {
+    // Để kiểm tra ảnh đã lưu hay chưa, bạn có thể sử dụng JWT token để xác định user_id và truyền vào hàm checkImageSaved(imageId, userId)
+    const userId = 1; // Giả sử user_id là 1
+    return this.imageService.checkImageSaved(imageId, userId);
   }
 
-  @Post(':id/comments')
-  async saveImageComment(
-    @Param('id') id: number,
-    @Body('content') content: string,
-  ): Promise<tblComment> {
-    return this.imageService.saveImageComment(id, content);
+  @Delete(':id')
+  @ApiOkResponse({ description: 'Delete an image by ID.' })
+  @ApiNotFoundResponse({ description: 'Image not found.' })
+  async deleteImageById(@Param('id') imageId: number): Promise<void> {
+    return this.imageService.deleteImageById(imageId);
+  }
+
+  @Post()
+  @ApiCreatedResponse({ description: 'Add a new image.' })
+  async createImage(@Body() data: tblImage): Promise<tblImage> {
+    return this.imageService.createImage(data);
   }
 }

@@ -1,32 +1,38 @@
+// main.ts
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { PrismaClient } from '@prisma/client';
+import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const prisma = new PrismaClient();
 
-  // Enable CORS
-  app.enableCors();
+  // Global prefix for all routes
+  app.setGlobalPrefix('api');
 
-  // Create Swagger API documentation
-  const config = new DocumentBuilder()
-    .setTitle('Your API Title')
-    .setDescription('Your API Description')
-    .setVersion('1.0')
-    .addTag('API')
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  // Validation pipe
+  app.useGlobalPipes(new ValidationPipe());
 
-  // Start the app
-  await app.listen(3000);
-
-  // Close Prisma client on app shutdown
-  app.enableShutdownHooks();
-  app.use(async () => {
-    await prisma.$disconnect();
+  // CORS configuration
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    preflightContinue: false,
+    optionsSuccessStatus: 200,
+    allowedHeaders: 'Content-Type,Authorization',
+    exposedHeaders: 'Content-Disposition',
   });
+
+  // Swagger configuration
+  const config = new DocumentBuilder()
+    .setTitle('Dự án Pinterest')
+    .setDescription('Đặc tả API')
+    .setVersion('1.0')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api-docs', app, document);
+
+  await app.listen(3000);
 }
 bootstrap();
