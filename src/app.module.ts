@@ -27,7 +27,7 @@ import { SaveImageModule } from './save-image/save-image.module';
     ConfigModule.forRoot(),
     PassportModule,
     JwtModule.register({
-      secret: 'your_secret_key', // Replace with your actual secret key
+      secret: '1234', // Replace with your actual secret key
       signOptions: { expiresIn: '1h' }, // Adjust the expiration time as needed
     }),
     ImageModule,

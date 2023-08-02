@@ -9,7 +9,7 @@ import { PrismaService } from 'prisma/prisma.service';
   imports: [
     PassportModule,
     JwtModule.register({
-      secret: 'your-secret-key', // Thay thế 'your-secret-key' bằng secret key của bạn
+      secret: '1234', // Thay thế 'your-secret-key' bằng secret key của bạn
       signOptions: { expiresIn: '1h' },
     }),
   ],

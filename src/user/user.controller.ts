@@ -44,6 +44,14 @@ export class UserController {
     return this.userService.loginUser(email, pass_word);
   }
 
+  // @Post('login')
+  // async loginUser(
+  //   @Body() loginData: { email: string; pass_word: string },
+  // ): Promise<{ accessToken: string }> {
+  //   const { email, pass_word } = loginData;
+  //   return this.userService.loginUser(email, pass_word);
+  // }
+
   @Get(':id')
   async getUser(@Param('id') userId: number): Promise<tblUser | null> {
     return this.userService.findUserById(userId);
